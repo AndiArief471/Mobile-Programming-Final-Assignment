@@ -2,11 +2,21 @@ package com.example.mobileprogfinal;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +24,10 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class SignIn extends Fragment {
+    TextView loginBtn;
+    EditText emailField, passwordField;
+
+    FirebaseAuth auth;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +73,44 @@ public class SignIn extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_in, container, false);
+        View v = inflater.inflate(R.layout.fragment_sign_in, container, false);
+
+        loginBtn = v.findViewById(R.id.loginBtn);
+        emailField = v.findViewById(R.id.emailField);
+        passwordField = v.findViewById(R.id.passwordField);
+
+        auth = FirebaseAuth.getInstance();
+
+        loginBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String email = emailField.getText().toString();
+                String password = passwordField.getText().toString();
+
+                if(TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
+                    Toast.makeText(getContext(), "Input username and password", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    userLogin(email, password);
+                }
+            }
+        });
+
+        return v;
+    }
+
+    private void userLogin(String email, String pasword){
+        auth.signInWithEmailAndPassword(email, pasword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    String fail = task.getException().getMessage();
+                    Toast.makeText(getContext(), fail, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }

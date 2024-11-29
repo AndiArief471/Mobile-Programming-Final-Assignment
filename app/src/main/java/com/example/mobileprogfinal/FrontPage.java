@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 
-public class frontPage extends AppCompatActivity {
+public class FrontPage extends AppCompatActivity {
     TextView signIn, signUp;
     Button test;
 
@@ -48,8 +47,6 @@ public class frontPage extends AppCompatActivity {
                         .setReorderingAllowed(true)
                         .addToBackStack("name")
                         .commit();
-
-                Toast.makeText(frontPage.this, "Button Pressed", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -68,8 +65,6 @@ public class frontPage extends AppCompatActivity {
                         .setReorderingAllowed(true)
                         .addToBackStack("name")
                         .commit();
-
-                Toast.makeText(frontPage.this, "Button Pressed", Toast.LENGTH_SHORT).show();
             }
         });
     }
