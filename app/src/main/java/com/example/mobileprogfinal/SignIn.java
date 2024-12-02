@@ -1,5 +1,6 @@
 package com.example.mobileprogfinal;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -105,6 +106,8 @@ public class SignIn extends Fragment {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+                    Intent openSalesPage = new Intent(getContext(), SalesPage.class);
+                    startActivity(openSalesPage);
                 }
                 else{
                     String fail = task.getException().getMessage();

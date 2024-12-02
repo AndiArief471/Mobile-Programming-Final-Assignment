@@ -15,9 +15,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.w3c.dom.Document;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +35,7 @@ public class SignUp extends Fragment {
 
     TextView createAccountBtn;
     EditText nameField, emailField, passwordField;
-
+    FirebaseFirestore db;
     FirebaseAuth auth;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -82,6 +89,7 @@ public class SignUp extends Fragment {
         emailField = v.findViewById(R.id.emailField);
         passwordField = v.findViewById(R.id.passwordField);
 
+        db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
         createAccountBtn.setOnClickListener(new View.OnClickListener() {
@@ -95,7 +103,7 @@ public class SignUp extends Fragment {
                     Toast.makeText(getContext(), "Input name, username, and password", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    registerUser(email, password);
+                    registerUser(name, email, password);
                 }
             }
         });
@@ -103,17 +111,38 @@ public class SignUp extends Fragment {
         return v;
     }
 
-    private void registerUser(String email, String password){
+    private void registerUser(String name, String email, String password){
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Toast.makeText(getContext(), "Register Complete", Toast.LENGTH_SHORT).show();
+                    addUser(email, name);
                 }
                 else{
                     String fail = task.getException().getMessage();
                     Toast.makeText(getContext(), fail, Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+    }
+
+    private void addUser(String userEmail, String userName){
+        Credentials user = new Credentials();
+        user.setUserEmail(userEmail);
+        user.setUserName(userName);
+
+        CollectionReference collections = db.collection("Credentials");
+        DocumentReference doc = collections.document(userEmail);
+        doc.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
