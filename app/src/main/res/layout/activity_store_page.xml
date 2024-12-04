@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:background="#6750A3"
         android:gravity="center_vertical"
-        android:text="   Stock"
+        android:text="   Store Storage"
         android:textColor="#FFFFFF"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,18 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginEnd="10dp"
-        android:clickable="true"
-        android:gravity="center"
-        android:onClick="testButton"
-        android:text="Name"
-        android:textColor="#FFFFFF"
-        app:layout_constraintEnd_toEndOf="@+id/textView6"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/listView2"

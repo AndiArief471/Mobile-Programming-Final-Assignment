@@ -25,11 +25,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SalesPage extends AppCompatActivity {
-    TextView searchItem, warehouseBtn, storeBtn;
+    TextView searchItem, warehouseBtn, storeBtn, userNameText;
     ArrayList<String> arrayList;
     Dialog dialog;
 
@@ -46,6 +48,7 @@ public class SalesPage extends AppCompatActivity {
 
         searchItem = findViewById(R.id.searchItem);
         warehouseBtn = findViewById(R.id.warehouseBtn);
+        userNameText = findViewById(R.id.userNameText);
         storeBtn = findViewById(R.id.storeBtn);
 
         arrayList = new ArrayList<>();
@@ -54,6 +57,9 @@ public class SalesPage extends AppCompatActivity {
         arrayList.add("banana");
         arrayList.add("Cherry");
         arrayList.add("Dragon Fruit");
+
+        String userName = getIntent().getStringExtra("UserName");
+        userNameText.setText(userName);
 
         searchItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,5 +120,4 @@ public class SalesPage extends AppCompatActivity {
             }
         });
     }
-
 }

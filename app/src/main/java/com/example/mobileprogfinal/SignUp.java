@@ -2,8 +2,11 @@ package com.example.mobileprogfinal;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -96,7 +100,7 @@ public class SignUp extends Fragment {
             @Override
             public void onClick(View view) {
                 String name = nameField.getText().toString();
-                String email = emailField.getText().toString();
+                String email = emailField.getText().toString().toLowerCase();
                 String password = passwordField.getText().toString();
 
                 if(TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)){
@@ -131,19 +135,40 @@ public class SignUp extends Fragment {
         Credentials user = new Credentials();
         user.setUserEmail(userEmail);
         user.setUserName(userName);
+        db.collection("Credentials").document(userEmail).set(user);
 
-        CollectionReference collections = db.collection("Credentials");
-        DocumentReference doc = collections.document(userEmail);
-        doc.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
-            }
-        });
+        // Reference for later :
+//        db.collection("Credentials").document(userEmail).collection("Store")
+//                .document("Pen").set(user);
+//        db.collection("Credentials").document(userEmail).collection("Warehouse")
+//                .document("Pen").set(user);
+
+        // Original code :
+//        CollectionReference collections = db.collection("Credentials");
+//        DocumentReference doc = collections.document(userEmail);
+//        doc.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void unused) {
+//                Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        CollectionReference collectionStore = doc.collection("Store");
+//        DocumentReference docStore = collectionStore.document(userEmail);
+//        docStore.set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void unused) {
+//                Toast.makeText(getContext(), "Store Success", Toast.LENGTH_SHORT).show();
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Toast.makeText(getContext(), "Store Failed", Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 }

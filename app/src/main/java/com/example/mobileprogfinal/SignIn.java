@@ -18,6 +18,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +33,7 @@ public class SignIn extends Fragment {
     TextView loginBtn;
     EditText emailField, passwordField;
 
+    FirebaseFirestore db;
     FirebaseAuth auth;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -80,6 +86,7 @@ public class SignIn extends Fragment {
         emailField = v.findViewById(R.id.emailField);
         passwordField = v.findViewById(R.id.passwordField);
 
+        db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -100,14 +107,22 @@ public class SignIn extends Fragment {
         return v;
     }
 
-    private void userLogin(String email, String pasword){
-        auth.signInWithEmailAndPassword(email, pasword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+    private void userLogin(String email, String password){
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Toast.makeText(getContext(), "Login Successful", Toast.LENGTH_SHORT).show();
-                    Intent openSalesPage = new Intent(getContext(), SalesPage.class);
-                    startActivity(openSalesPage);
+                    DocumentReference doc = db.collection("Credentials").document(email);
+
+                    doc.get().addOnCompleteListener(tasks -> {
+                        DocumentSnapshot document = tasks.getResult();
+                        String fieldValue = document.get("userName").toString();
+
+                        Intent openSalesPage = new Intent(getContext(), SalesPage.class);
+                        openSalesPage.putExtra("UserName", fieldValue);
+                        startActivity(openSalesPage);
+                    });
                 }
                 else{
                     String fail = task.getException().getMessage();
