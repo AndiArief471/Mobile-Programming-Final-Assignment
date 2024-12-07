@@ -133,13 +133,21 @@ public class SignUp extends Fragment {
 
     private void addUser(String userEmail, String userName){
         Credentials user = new Credentials();
+
         user.setUserEmail(userEmail);
         user.setUserName(userName);
+
         db.collection("Credentials").document(userEmail).set(user);
 
         // Reference for later :
-//        db.collection("Credentials").document(userEmail).collection("Store")
-//                .document("Pen").set(user);
+
+//        ItemList item = new ItemList();
+//
+//        String itemName = "pen";
+//        item.setName(itemName);
+//        item.setQuantity("10");
+//
+//        db.collection("Credentials").document(userEmail).collection("Store").document(itemName).set(item);
 //        db.collection("Credentials").document(userEmail).collection("Warehouse")
 //                .document("Pen").set(user);
 

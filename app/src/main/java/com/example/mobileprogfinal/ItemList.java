@@ -1,13 +1,15 @@
 package com.example.mobileprogfinal;
 
-public class itemList {
-    String name;
-    String quantity;
+public class ItemList {
+    private String name;
+    private String quantity;
 
-    public itemList(String name, String quantity) {
+    public ItemList(String name, String quantity) {
         this.name = name;
         this.quantity = quantity;
     }
+
+    public ItemList() {}
 
     public String getName() {
         return name;

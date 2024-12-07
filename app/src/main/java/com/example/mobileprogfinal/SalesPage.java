@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.RouteListingPreference;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,22 +12,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SearchView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SalesPage extends AppCompatActivity {
     TextView searchItem, warehouseBtn, storeBtn, userNameText;
@@ -107,7 +100,7 @@ public class SalesPage extends AppCompatActivity {
         storeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent openStorePage = new Intent(SalesPage.this, StorePage.class);
+                Intent openStorePage = new Intent(SalesPage.this, UnusedStorePage.class);
                 startActivity(openStorePage);
             }
         });
@@ -115,7 +108,7 @@ public class SalesPage extends AppCompatActivity {
         warehouseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent openWarehousePage = new Intent(SalesPage.this, WarehousePage.class);
+                Intent openWarehousePage = new Intent(SalesPage.this, UnusedWarehousePage.class);
                 startActivity(openWarehousePage);
             }
         });
