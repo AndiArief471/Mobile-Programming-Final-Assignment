@@ -11,18 +11,20 @@ import java.util.List;
 
 public class ItemAdapter extends RecyclerView.Adapter<ItemViewHolder> {
 
+    private final RecyclerViewInterface recyclerViewInterface;
     Context context;
     List<ItemList> items;
 
-    public ItemAdapter(Context context, List<ItemList> items) {
+    public ItemAdapter(Context context, List<ItemList> items, RecyclerViewInterface recyclerViewInterface) {
         this.context = context;
         this.items = items;
+        this.recyclerViewInterface = recyclerViewInterface;
     }
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ItemViewHolder(LayoutInflater.from(context).inflate(R.layout.item_view, parent, false));
+        return new ItemViewHolder(LayoutInflater.from(context).inflate(R.layout.item_view, parent, false), recyclerViewInterface);
     }
 
     @Override

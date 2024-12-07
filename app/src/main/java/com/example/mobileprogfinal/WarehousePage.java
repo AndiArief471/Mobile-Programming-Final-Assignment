@@ -16,8 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WarehousePage extends AppCompatActivity {
+public class WarehousePage extends AppCompatActivity implements RecyclerViewInterface{
     RecyclerView recyclerView;
+    List<ItemList> items = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,30 +33,37 @@ public class WarehousePage extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
 
-        List<ItemList> items = new ArrayList<>();
+
         items.add(new ItemList("Pen", "10"));
         items.add(new ItemList("Eraser", "5"));
         items.add(new ItemList("Ruler", "6"));
         items.add(new ItemList("Book", "3"));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ItemAdapter(getApplicationContext(),items));
+        recyclerView.setAdapter(new ItemAdapter(getApplicationContext(),items, WarehousePage.this));
 
-        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                return true;
-            }
+//        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+//            @Override
+//            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+//                return true;
+//            }
+//
+//            @Override
+//            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+//                Toast.makeText(getBaseContext(), "Clicked", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+//
+//            }
+//        });
+    }
 
-            @Override
-            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                Toast.makeText(getBaseContext(), "Clicked", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
+    @Override
+    public void onItemClick(int position) {
+        Toast.makeText(getBaseContext(),
+                items.get(position).getName() + ", " + items.get(position).getQuantity(),
+                Toast.LENGTH_SHORT).show();
     }
 }
