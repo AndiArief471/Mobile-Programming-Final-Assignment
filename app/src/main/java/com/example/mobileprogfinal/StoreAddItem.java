@@ -6,12 +6,16 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,48 +23,44 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import android.widget.TextView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public class SalesPage extends AppCompatActivity {
-    TextView searchItem, warehouseBtn, storeBtn, userNameText;
-    ArrayList<String> arrayList;
+public class StoreAddItem extends AppCompatActivity {
+    TextView itemName, addItemBtn;
+    EditText itemQty;
+    FirebaseFirestore db;
+    ArrayList<String> itemDoc;
     Dialog dialog;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_sales_page);
+        setContentView(R.layout.activity_store_add_item);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        String userName = getIntent().getStringExtra("UserName");
         String userEmail = getIntent().getStringExtra("UserEmail");
 
-        searchItem = findViewById(R.id.searchItem);
-        warehouseBtn = findViewById(R.id.warehouseBtn);
-        userNameText = findViewById(R.id.userNameText);
-        storeBtn = findViewById(R.id.storeBtn);
+        itemName = findViewById(R.id.itemName);
+        itemQty = findViewById(R.id.itemQty);
+        addItemBtn = findViewById(R.id.addItemBtn);
 
-        arrayList = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
 
-        arrayList.add("Apple");
-        arrayList.add("banana");
-        arrayList.add("Cherry");
-        arrayList.add("Dragon Fruit");
+        itemDoc = new ArrayList<>();
 
-        userNameText.setText(userName);
+        fetchItemData();
 
-        searchItem.setOnClickListener(new View.OnClickListener() {
+        itemName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog = new Dialog(SalesPage.this);
+                dialog = new Dialog(StoreAddItem.this);
                 dialog.setContentView(R.layout.dialog_searchable_spinner);
 
                 dialog.getWindow().setLayout(1000, 1500);
@@ -71,7 +71,7 @@ public class SalesPage extends AppCompatActivity {
                 EditText editText = dialog.findViewById(R.id.editText);
                 ListView listView = dialog.findViewById(R.id.listView);
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(SalesPage.this, android.R.layout.simple_list_item_1, arrayList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(StoreAddItem.this, android.R.layout.simple_list_item_1, itemDoc);
                 listView.setAdapter(adapter);
                 editText.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -93,29 +93,53 @@ public class SalesPage extends AppCompatActivity {
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        searchItem.setText((adapter.getItem(i)));
+                        itemName.setText((adapter.getItem(i)));
                         dialog.dismiss();;
                     }
                 });
             }
         });
 
-        storeBtn.setOnClickListener(new View.OnClickListener() {
+        addItemBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent openStorePage = new Intent(SalesPage.this, StorePage.class);
-                openStorePage.putExtra("UserEmail", userEmail);
-                startActivity(openStorePage);
-            }
-        });
+                String name = itemName.getText().toString();
+                String qty = itemQty.getText().toString();
 
-        warehouseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent openWarehousePage = new Intent(SalesPage.this, WarehousePage.class);
-                openWarehousePage.putExtra("UserEmail", userEmail);
-                startActivity(openWarehousePage);
+                if(TextUtils.isEmpty(name) || TextUtils.isEmpty(qty)){
+                    Toast.makeText(StoreAddItem.this, "Input item name and quantity", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    addItem(name, qty);
+                    Intent openStorePage = new Intent(StoreAddItem.this, StorePage.class);
+                    openStorePage.putExtra("UserEmail", userEmail);
+                    startActivity(openStorePage);
+                    finish();
+                }
             }
         });
+    }
+
+    public void addItem(String itemName, String itemQty){
+        String userEmail = getIntent().getStringExtra("UserEmail");
+        ItemList item = new ItemList();
+
+        item.setName(itemName);
+        item.setQuantity(itemQty);
+
+        db.collection("Credentials").document(userEmail)
+                .collection("Store").document(itemName).set(item);
+    }
+
+    private void fetchItemData() {
+        String userEmail = getIntent().getStringExtra("UserEmail");
+        db.collection("Credentials").document(userEmail).collection("Warehouse")
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String documentName = document.getId();
+                        itemDoc.add(documentName);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching documents", e));
     }
 }

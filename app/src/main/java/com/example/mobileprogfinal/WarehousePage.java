@@ -1,7 +1,11 @@
 package com.example.mobileprogfinal;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -13,11 +17,16 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WarehousePage extends AppCompatActivity implements RecyclerViewInterface{
+    TextView addItemBtn;
     RecyclerView recyclerView;
+    FirebaseFirestore db;
     List<ItemList> items = new ArrayList<>();
 
     @Override
@@ -30,40 +39,55 @@ public class WarehousePage extends AppCompatActivity implements RecyclerViewInte
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        String userEmail = getIntent().getStringExtra("UserEmail");
 
+        addItemBtn = findViewById(R.id.addItemBtn);
         recyclerView = findViewById(R.id.recyclerView);
 
+        db = FirebaseFirestore.getInstance();
 
-        items.add(new ItemList("Pen", "10"));
-        items.add(new ItemList("Eraser", "5"));
-        items.add(new ItemList("Ruler", "6"));
-        items.add(new ItemList("Book", "3"));
+        fetchItemData(items, userEmail);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ItemAdapter(getApplicationContext(),items, WarehousePage.this));
+        addItemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent openStoreAddItem = new Intent(WarehousePage.this, WarehouseAddItem.class);
+                openStoreAddItem.putExtra("UserEmail", userEmail);
+                startActivity(openStoreAddItem);
+            }
+        });
+    }
 
-//        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-//            @Override
-//            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-//                return true;
-//            }
-//
-//            @Override
-//            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-//                Toast.makeText(getBaseContext(), "Clicked", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-//
-//            }
-//        });
+    private void fetchItemData(List<ItemList> itemList, String userEmail) {
+        db.collection("Credentials").document(userEmail).collection("Warehouse")
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        ItemList item = document.toObject(ItemList.class);
+                        if (item != null) {
+                            itemList.add(item);
+                        }
+                    }
+                    handleItemList(items);
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching documents", e));
+    }
+
+    private void handleItemList(List<ItemList> itemLists) {
+
+        recyclerView.setAdapter(new ItemAdapter(WarehousePage.this, itemLists, WarehousePage.this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(WarehousePage.this));
+
     }
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(getBaseContext(),
-                items.get(position).getName() + ", " + items.get(position).getQuantity(),
-                Toast.LENGTH_SHORT).show();
+        String userEmail = getIntent().getStringExtra("UserEmail");
+
+        Intent openWarehouseEditItem = new Intent(WarehousePage.this, WarehouseEditItem.class);
+        openWarehouseEditItem.putExtra("ItemName", items.get(position).getName());
+        openWarehouseEditItem.putExtra("ItemQuantity", items.get(position).getQuantity());
+        openWarehouseEditItem.putExtra("UserEmail", userEmail);
+
+        startActivity(openWarehouseEditItem);
     }
 }

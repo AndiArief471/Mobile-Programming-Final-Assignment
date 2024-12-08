@@ -13,22 +13,31 @@
         android:theme="@style/Theme.MobileProgFinal"
         tools:targetApi="31">
         <activity
+            android:name=".WarehouseEditItem"
+            android:exported="false" />
+        <activity
+            android:name=".StoreEditItem"
+            android:exported="false" />
+        <activity
+            android:name=".WarehouseAddItem"
+            android:exported="false" />
+        <activity
+            android:name=".StoreAddItem"
+            android:exported="false" />
+        <activity
             android:name=".StorePage"
-            android:exported="false" />
-        <activity
-            android:name=".FrontPage"
-            android:exported="false" />
-        <activity
-            android:name=".UnusedWarehousePage"
-            android:exported="false" />
-        <activity
-            android:name=".SalesPage"
             android:exported="false" />
         <activity
             android:name=".UnusedStorePage"
             android:exported="false" />
         <activity
             android:name=".WarehousePage"
+            android:exported="false" />
+        <activity
+            android:name=".SalesPage"
+            android:exported="false" />
+        <activity
+            android:name=".FrontPage"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +45,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>

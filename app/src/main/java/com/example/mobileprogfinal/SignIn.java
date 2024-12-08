@@ -117,10 +117,12 @@ public class SignIn extends Fragment {
 
                     doc.get().addOnCompleteListener(tasks -> {
                         DocumentSnapshot document = tasks.getResult();
-                        String fieldValue = document.get("userName").toString();
+                        String userName = document.getString("userName");
+                        String userEmail = document.getString("userEmail");
 
                         Intent openSalesPage = new Intent(getContext(), SalesPage.class);
-                        openSalesPage.putExtra("UserName", fieldValue);
+                        openSalesPage.putExtra("UserName", userName);
+                        openSalesPage.putExtra("UserEmail", userEmail);
                         startActivity(openSalesPage);
                     });
                 }

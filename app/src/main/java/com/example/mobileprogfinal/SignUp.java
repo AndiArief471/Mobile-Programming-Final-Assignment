@@ -109,6 +109,10 @@ public class SignUp extends Fragment {
                 else{
                     registerUser(name, email, password);
                 }
+
+                nameField.setText("");
+                emailField.setText("");
+                passwordField.setText("");
             }
         });
 

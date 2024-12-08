@@ -1,9 +1,18 @@
 package com.example.mobileprogfinal;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.TextView;
@@ -14,13 +23,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class UnusedStorePage extends AppCompatActivity {
-    TextView pageName;
-    ArrayList<String> listItems = new ArrayList<String>();
-    ListView listView;
-    String fruitList [] = {"Apple", "Banana", "Cherry", "Dragon Fruit"};
+    TextView itemName, addItemBtn;
+    EditText itemQty;
+    FirebaseFirestore db;
+    ArrayList<String> itemDoc;
+    Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,32 +47,97 @@ public class UnusedStorePage extends AppCompatActivity {
             return insets;
         });
 
-        pageName = findViewById(R.id.textView3);
-        listView = findViewById(R.id.listView);
+        itemName = findViewById(R.id.itemName);
+        itemQty = findViewById(R.id.itemQty);
+        addItemBtn = findViewById(R.id.addItemBtn);
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, fruitList);
-        listView.setAdapter(arrayAdapter);
+        db = FirebaseFirestore.getInstance();
 
-        listItems.add("Apple");
-        listItems.add("Banana");
-        listItems.add("Cherry");
-        listItems.add("Dragon Fruit");
+        itemDoc = new ArrayList<>();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                String selectedItem = listView.getItemAtPosition(position).toString();
-                Toast.makeText(getBaseContext(), "item = " + selectedItem, Toast.LENGTH_LONG).show();
-            }
-        });
+        fetchItemData();
 
-        pageName.setOnClickListener(new View.OnClickListener() {
+        itemName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                pageName.setText("Changed");
-                Toast.makeText(UnusedStorePage.this, "Button Pressed", Toast.LENGTH_SHORT).show();
+                dialog = new Dialog(UnusedStorePage.this);
+                dialog.setContentView(R.layout.dialog_searchable_spinner);
+
+                dialog.getWindow().setLayout(1000, 1500);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                dialog.show();
+
+                EditText editText = dialog.findViewById(R.id.editText);
+                ListView listView = dialog.findViewById(R.id.listView);
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(UnusedStorePage.this, android.R.layout.simple_list_item_1, itemDoc);
+                listView.setAdapter(adapter);
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        adapter.getFilter().filter(charSequence);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+
+                    }
+                });
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        itemName.setText((adapter.getItem(i)));
+                        dialog.dismiss();;
+                    }
+                });
             }
         });
-//
+
+        addItemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name = itemName.getText().toString();
+                String qty = itemQty.getText().toString();
+
+                if(TextUtils.isEmpty(name) || TextUtils.isEmpty(qty)){
+                    Toast.makeText(UnusedStorePage.this, "Input item name and quantity", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    addItem(name, qty);
+                    Intent openStorePage = new Intent(UnusedStorePage.this, StorePage.class);
+                    startActivity(openStorePage);
+                }
+            }
+        });
+    }
+
+    public void addItem(String itemName, String itemQty){
+        String userEmail = getIntent().getStringExtra("UserEmail");
+        ItemList item = new ItemList();
+
+        item.setName(itemName);
+        item.setQuantity(itemQty);
+
+        db.collection("Credentials").document(userEmail)
+                .collection("Store").document(itemName).set(item);
+    }
+
+    private void fetchItemData() {
+        String userEmail = getIntent().getStringExtra("UserEmail");
+        db.collection("Credentials").document(userEmail).collection("Warehouse")
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String documentName = document.getId();
+                        itemDoc.add(documentName);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching documents", e));
     }
 }

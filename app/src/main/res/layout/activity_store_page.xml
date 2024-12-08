@@ -11,7 +11,7 @@
         android:id="@+id/textView6"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#6750A3"
+        android:background="#66068C"
         android:gravity="center_vertical"
         android:text="   Store Storage"
         android:textColor="#FFFFFF"
@@ -31,11 +31,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/addItemBtn"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:gravity="center"
-        android:background="#6750A3"
+        android:background="#66068C"
         android:textColor="#FFFFFF"
         android:text="Add New Item"
         android:clickable="true"

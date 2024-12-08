@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -25,7 +27,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StorePage extends AppCompatActivity implements RecyclerViewInterface{
+public class StorePage extends AppCompatActivity implements RecyclerViewInterface {
+    TextView addItemBtn;
     RecyclerView recyclerView;
     FirebaseFirestore db;
     List<ItemList> items = new ArrayList<>();
@@ -40,20 +43,31 @@ public class StorePage extends AppCompatActivity implements RecyclerViewInterfac
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        String userEmail = getIntent().getStringExtra("UserEmail");
 
+        addItemBtn = findViewById(R.id.addItemBtn);
         recyclerView = findViewById(R.id.recyclerView);
+
         db = FirebaseFirestore.getInstance();
 
-        fetchItemData(items);
+        fetchItemData(items, userEmail);
 
+        addItemBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent openStoreAddItem = new Intent(StorePage.this, StoreAddItem.class);
+                openStoreAddItem.putExtra("UserEmail", userEmail);
+                startActivity(openStoreAddItem);
+            }
+        });
     }
 
-    private void fetchItemData(List<ItemList> itemList) {
-        db.collection("Credentials").document("arief@gmail.com").collection("Store")
+    private void fetchItemData(List<ItemList> itemList, String userEmail) {
+        db.collection("Credentials").document(userEmail).collection("Store")
                 .get().addOnSuccessListener(queryDocumentSnapshots -> {
-                    for(DocumentSnapshot document: queryDocumentSnapshots){
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
                         ItemList item = document.toObject(ItemList.class);
-                        if(item != null){
+                        if (item != null) {
                             itemList.add(item);
                         }
                     }
@@ -64,50 +78,20 @@ public class StorePage extends AppCompatActivity implements RecyclerViewInterfac
 
     private void handleItemList(List<ItemList> itemLists) {
 
-        recyclerView.setAdapter(new ItemAdapter(StorePage.this,itemLists, StorePage.this));
+        recyclerView.setAdapter(new ItemAdapter(StorePage.this, itemLists, StorePage.this));
         recyclerView.setLayoutManager(new LinearLayoutManager(StorePage.this));
 
     }
 
     @Override
     public void onItemClick(int position) {
-        Toast.makeText(StorePage.this,
-                items.get(position).getName() + ", " + items.get(position).getQuantity(),
-                Toast.LENGTH_SHORT).show();
+        String userEmail = getIntent().getStringExtra("UserEmail");
+
+        Intent openStoreEditItem = new Intent(StorePage.this, StoreEditItem.class);
+        openStoreEditItem.putExtra("ItemName", items.get(position).getName());
+        openStoreEditItem.putExtra("ItemQuantity", items.get(position).getQuantity());
+        openStoreEditItem.putExtra("UserEmail", userEmail);
+
+        startActivity(openStoreEditItem);
     }
 }
-
-
-        //  Old Code
-//        db.collection("Credentials").document("arief@gmail.com").collection("Store")
-//                .get().addOnSuccessListener(queryDocumentSnapshots -> {
-//                    for(DocumentSnapshot document: queryDocumentSnapshots){
-//                        ItemList itemList = document.toObject(ItemList.class);
-//                        if(itemList != null){
-//                            items.add(itemList);
-//                        }
-//                    }
-//                    handleItemList(items);
-//
-//                });
-
-//        db.collection("Credentials").document("arief@gmail.com").collection("Store")
-//                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        List<ItemList> items = new ArrayList<>();
-//                        if(task.isSuccessful()){
-//                            for(QueryDocumentSnapshot document : task.getResult()){
-//                                String itemName = document.getString("name");
-//                                String itemQty = document.getString("quantity");
-//
-//                                items.add(new ItemList(itemName, itemQty));
-//
-////                                Log.d("TestLog",document.getId() + " => " + document.getData());
-////                                Log.d("TestLog", "Name = " + itemName + ", Qty = " +itemQty);
-//                            }
-//
-//                            recyclerView.setAdapter(new ItemAdapter(StorePage.this,items, StorePage.this));
-//                        }
-//                    }
-//                });

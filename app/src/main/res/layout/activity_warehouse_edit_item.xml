@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UnusedStorePage">
+    tools:context=".WarehouseEditItem">
 
     <TextView
         android:id="@+id/textView10"
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:textSize="20sp"
-        android:text="Add Item To Store Storage"
+        android:text="Edit Item in Warehouse's Storage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,16 +38,14 @@
         app:layout_constraintStart_toStartOf="@+id/itemName"
         app:layout_constraintTop_toBottomOf="@+id/itemName" />
 
-    <TextView
+    <EditText
         android:id="@+id/itemName"
         android:layout_width="360dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="192dp"
-        android:drawableEnd="@drawable/arrow_down"
         android:ems="10"
-        android:hint="Select Item"
+        android:hint="Item name"
         android:inputType="text"
-        android:textSize="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -65,21 +63,33 @@
         app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <TextView
-        android:id="@+id/addItemBtn"
+        android:id="@+id/editItemBtn"
         android:layout_width="360dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="104dp"
-        android:text="Add Item"
-        android:textSize="18sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:letterSpacing=".1"
-        android:gravity="center"
+        android:layout_marginBottom="100dp"
         android:background="#66068C"
+        android:gravity="center"
+        android:letterSpacing=".1"
+        android:text="Edit Item"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/deleteItemBtn"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="@drawable/border"
+        android:gravity="center"
+        android:text="Delete Item"
+        android:textColor="#66068C"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/itemQty"
+        app:layout_constraintEnd_toEndOf="@+id/itemName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

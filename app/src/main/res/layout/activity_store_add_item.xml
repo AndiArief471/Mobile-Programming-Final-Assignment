@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UnusedStorePage">
+    tools:context=".StoreAddItem">
 
     <TextView
         android:id="@+id/textView10"
@@ -68,7 +68,7 @@
         android:id="@+id/addItemBtn"
         android:layout_width="360dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="104dp"
+        android:layout_marginBottom="100dp"
         android:text="Add Item"
         android:textSize="18sp"
         android:textColor="@color/white"
@@ -78,8 +78,5 @@
         android:background="#66068C"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
