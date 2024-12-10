@@ -23,6 +23,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -110,25 +111,42 @@ public class StoreAddItem extends AppCompatActivity {
                     Toast.makeText(StoreAddItem.this, "Input item name and quantity", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    addItem(name, qty);
-                    Intent openStorePage = new Intent(StoreAddItem.this, StorePage.class);
-                    openStorePage.putExtra("UserEmail", userEmail);
-                    startActivity(openStorePage);
-                    finish();
+                    addItem(userEmail, name, qty);
                 }
             }
         });
     }
 
-    public void addItem(String itemName, String itemQty){
-        String userEmail = getIntent().getStringExtra("UserEmail");
-        ItemList item = new ItemList();
+    public void addItem(String userEmail, String itemName, String itemQty){
+        DocumentReference doc = db.collection("Credentials").document(userEmail).collection("Warehouse").document(itemName);
 
-        item.setName(itemName);
-        item.setQuantity(itemQty);
+        doc.get().addOnCompleteListener(task -> {
+            DocumentSnapshot document = task.getResult();
+            String warehouseStock = document.getString("quantity");
+            Log.d("TestLog", "warehouse stock : " + warehouseStock
+                    + "\nuser email : " + userEmail);
 
-        db.collection("Credentials").document(userEmail)
-                .collection("Store").document(itemName).set(item);
+            int warehouseItemStock = Integer.parseInt(warehouseStock);
+            int addStoreItem = Integer.parseInt(itemQty);
+
+            if(addStoreItem <= warehouseItemStock){
+                int updatedStock = warehouseItemStock - addStoreItem;
+
+                doc.update("quantity", String.valueOf(updatedStock));
+
+                addItemToStore(userEmail, itemName, itemQty);
+
+                Intent openStorePage = new Intent(StoreAddItem.this, StorePage.class);
+                openStorePage.putExtra("UserEmail", userEmail);
+                openStorePage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(openStorePage);
+                finish();
+            }
+            else{
+                Toast.makeText(StoreAddItem.this, "Item quantity exceeds the available stock in the warehouse\nWarehouse Stock : " + warehouseStock
+                        , Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void fetchItemData() {
@@ -141,5 +159,15 @@ public class StoreAddItem extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error fetching documents", e));
+    }
+
+    public void addItemToStore(String userEmail, String itemName, String itemQty){
+        ItemList item = new ItemList();
+
+        item.setName(itemName);
+        item.setQuantity(itemQty);
+
+        db.collection("Credentials").document(userEmail)
+                .collection("Store").document(itemName).set(item);
     }
 }

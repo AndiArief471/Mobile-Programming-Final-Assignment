@@ -1,5 +1,6 @@
 package com.example.mobileprogfinal;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -67,5 +68,14 @@ public class FrontPage extends AppCompatActivity {
                         .commit();
             }
         });
+    }
+
+    protected void onStart() {
+        super.onStart();
+        // NOTE: if user is logged in, then show MainActivity
+        if (Preferences.getStatusLogin(getBaseContext())) {
+            startActivity(new Intent(getBaseContext(), SalesPage.class));
+            finish();
+        }
     }
 }

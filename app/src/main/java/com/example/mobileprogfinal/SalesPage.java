@@ -6,7 +6,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,15 +22,20 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
 public class SalesPage extends AppCompatActivity {
-    TextView searchItem, warehouseBtn, storeBtn, userNameText;
+    TextView searchItem, sellBtn, warehouseBtn, storeBtn, userNameText;
+    EditText itemQty;
     ArrayList<String> arrayList;
     Dialog dialog;
-
-
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,22 +47,37 @@ public class SalesPage extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        String userName = getIntent().getStringExtra("UserName");
-        String userEmail = getIntent().getStringExtra("UserEmail");
 
-        searchItem = findViewById(R.id.searchItem);
-        warehouseBtn = findViewById(R.id.warehouseBtn);
+//        String userName = getIntent().getStringExtra("UserName");
+//        String userEmail = getIntent().getStringExtra("UserEmail");
+
+        String userName = Preferences.getUserName(SalesPage.this);
+        String userEmail = Preferences.getUserEmail(SalesPage.this);
+
         userNameText = findViewById(R.id.userNameText);
+        searchItem = findViewById(R.id.searchItem);
+        itemQty = findViewById(R.id.itemQty);
+        sellBtn = findViewById(R.id.sellBtn);
+        warehouseBtn = findViewById(R.id.warehouseBtn);
         storeBtn = findViewById(R.id.storeBtn);
+
+        db = FirebaseFirestore.getInstance();
+
+        userNameText.setText(userName);
 
         arrayList = new ArrayList<>();
 
-        arrayList.add("Apple");
-        arrayList.add("banana");
-        arrayList.add("Cherry");
-        arrayList.add("Dragon Fruit");
+        fetchItemData(userEmail);
 
-        userNameText.setText(userName);
+        userNameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent openUserPage = new Intent(SalesPage.this, UserPage.class);
+                openUserPage.putExtra("UserEmail", userEmail);
+                openUserPage.putExtra("UserName", userName);
+                startActivity(openUserPage);
+            }
+        });
 
         searchItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +122,43 @@ public class SalesPage extends AppCompatActivity {
             }
         });
 
+        sellBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String ItemName = searchItem.getText().toString();
+                String ItemQty = itemQty.getText().toString();
+
+                if(!TextUtils.isEmpty(ItemName) || !TextUtils.isEmpty(ItemQty)){
+                    DocumentReference doc = db.collection("Credentials")
+                            .document(userEmail).collection("Store").document(ItemName);
+
+                    doc.get().addOnCompleteListener(task -> {
+                        DocumentSnapshot document = task.getResult();
+                        String storeStock = document.getString("quantity");
+
+                        int warehouseItemStock = Integer.parseInt(storeStock);
+                        int soldStoreItem = Integer.parseInt(ItemQty);
+
+                        if(soldStoreItem <= warehouseItemStock){
+                            int updatedStock = warehouseItemStock - soldStoreItem;
+
+                            doc.update("quantity", String.valueOf(updatedStock));
+
+                            searchItem.setText("");
+                            itemQty.setText("0");
+                        }
+                        else{
+                            Toast.makeText(SalesPage.this, "Item quantity exceeds the available stock in the Store\nStore Stock : " + storeStock
+                                    , Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else{
+                    Toast.makeText(SalesPage.this, "Input Item name and quantity", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
         storeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,5 +176,24 @@ public class SalesPage extends AppCompatActivity {
                 startActivity(openWarehousePage);
             }
         });
+    }
+
+    private void fetchItemData(String userEmail) {
+        db.collection("Credentials").document(userEmail).collection("Store")
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String documentName = document.getId();
+                        arrayList.add(documentName);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching documents", e));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Preferences.clearLoggedUser(SalesPage.this);
+        startActivity(new Intent(SalesPage.this, FrontPage.class));
+        finish();
     }
 }

@@ -48,7 +48,9 @@ public class StoreEditItem extends AppCompatActivity {
             public void onClick(View view) {
                 Intent openStorePage = new Intent(StoreEditItem.this, StorePage.class);
                 openStorePage.putExtra("UserEmail", userEmail);
+                openStorePage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(openStorePage);
+                finish();
             }
         });
     }

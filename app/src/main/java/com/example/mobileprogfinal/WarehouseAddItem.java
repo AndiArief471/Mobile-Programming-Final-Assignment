@@ -50,9 +50,10 @@ public class WarehouseAddItem extends AppCompatActivity {
                 }
                 else{
                     addItem(name, qty);
-                    Intent openStorePage = new Intent(WarehouseAddItem.this, WarehousePage.class);
-                    openStorePage.putExtra("UserEmail", userEmail);
-                    startActivity(openStorePage);
+                    Intent openWarehousePage = new Intent(WarehouseAddItem.this, WarehousePage.class);
+                    openWarehousePage.putExtra("UserEmail", userEmail);
+                    openWarehousePage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(openWarehousePage);
                     finish();
                 }
             }

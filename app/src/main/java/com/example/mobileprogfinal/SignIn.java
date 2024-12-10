@@ -120,10 +120,15 @@ public class SignIn extends Fragment {
                         String userName = document.getString("userName");
                         String userEmail = document.getString("userEmail");
 
+                        Preferences.setUserEmail(getContext(), userEmail);
+                        Preferences.setUserName(getContext(), userName);
+                        Preferences.setStatusLogin(getContext(), true);
+
                         Intent openSalesPage = new Intent(getContext(), SalesPage.class);
-                        openSalesPage.putExtra("UserName", userName);
-                        openSalesPage.putExtra("UserEmail", userEmail);
+//                        openSalesPage.putExtra("UserName", userName);
+//                        openSalesPage.putExtra("UserEmail", userEmail);
                         startActivity(openSalesPage);
+                        getActivity().finish();
                     });
                 }
                 else{

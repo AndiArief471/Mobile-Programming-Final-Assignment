@@ -13,7 +13,7 @@
         android:layout_height="50dp"
         android:background="#66068C"
         android:gravity="center_vertical"
-        android:text="   Store Storage"
+        android:text="   Warehouse Storage"
         android:textColor="#FFFFFF"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,8 +24,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView6" />

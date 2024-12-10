@@ -39,12 +39,12 @@
       app:layout_constraintStart_toStartOf="@+id/itemName"
       app:layout_constraintTop_toBottomOf="@+id/itemName" />
 
-  <EditText
+  <TextView
       android:id="@+id/itemName"
       android:layout_width="360dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="192dp"
-      android:ems="10"
+      android:textSize="18sp"
       android:hint="Item name"
       android:inputType="text"
       app:layout_constraintEnd_toEndOf="parent"
