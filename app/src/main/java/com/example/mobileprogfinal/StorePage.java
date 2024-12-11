@@ -94,4 +94,10 @@ public class StorePage extends AppCompatActivity implements RecyclerViewInterfac
 
         startActivity(openStoreEditItem);
     }
+
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(StorePage.this, SalesPage.class));
+        finish();
+    }
 }

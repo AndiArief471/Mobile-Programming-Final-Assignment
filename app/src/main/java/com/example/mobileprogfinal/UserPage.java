@@ -63,6 +63,7 @@ public class UserPage extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        startActivity(new Intent(UserPage.this, SalesPage.class));
         finish();
         super.onBackPressed();
     }

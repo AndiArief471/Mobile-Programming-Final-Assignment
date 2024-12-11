@@ -125,8 +125,6 @@ public class SignIn extends Fragment {
                         Preferences.setStatusLogin(getContext(), true);
 
                         Intent openSalesPage = new Intent(getContext(), SalesPage.class);
-//                        openSalesPage.putExtra("UserName", userName);
-//                        openSalesPage.putExtra("UserEmail", userEmail);
                         startActivity(openSalesPage);
                         getActivity().finish();
                     });

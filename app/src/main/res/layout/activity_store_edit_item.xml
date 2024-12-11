@@ -79,5 +79,17 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent" />
 
+  <TextView
+      android:id="@+id/deleteItemBtn"
+      android:layout_width="100dp"
+      android:layout_height="40dp"
+      android:background="@drawable/border"
+      android:gravity="center"
+      android:text="Delete Item"
+      android:textColor="#66068C"
+      android:textSize="15sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="@+id/itemQty"
+      app:layout_constraintEnd_toEndOf="@+id/itemName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

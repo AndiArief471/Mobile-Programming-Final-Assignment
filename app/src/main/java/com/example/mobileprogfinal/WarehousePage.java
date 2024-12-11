@@ -90,4 +90,10 @@ public class WarehousePage extends AppCompatActivity implements RecyclerViewInte
 
         startActivity(openWarehouseEditItem);
     }
+
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(WarehousePage.this, SalesPage.class));
+        finish();
+    }
 }
